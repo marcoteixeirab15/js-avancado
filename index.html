@@ -17,8 +17,23 @@
     </nav>
 
     <div class="container-fluid">
+        <div class="input-group mb-3">
+
+
+            <input type="text" class="form-control" placeholder="Description" id="desc">
+
+            <input type="text" class="form-control" placeholder="Amount" id="amount">
+
+            <input type="text" class="form-control" placeholder="Value" id="value">
+            <span id="btnUpdate" style="display: none">
+                <button onclick="updateData();" class="btn btn-success"> Save</button>
+                <button onclick="resetForm();" class="btn btn-warning"> Cancel</button>
+            </span>
+            <button id="btnAdd" onclick="addData();" class="btn btn-success"> ADD</button>
+        </div>
+
         <table id="listTable" class="table">
-            
+
         </table>
     </div>
 
