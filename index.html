@@ -18,25 +18,31 @@
 
     <div class="container-fluid">
         <div class="input-group mb-3">
-
-
             <input type="text" class="form-control" placeholder="Description" id="desc">
-
             <input type="text" class="form-control" placeholder="Amount" id="amount">
-
             <input type="text" class="form-control" placeholder="Value" id="value">
             <span id="btnUpdate" style="display: none">
+                <span id="inputIDUpdate"></span>
                 <button onclick="updateData();" class="btn btn-success"> Save</button>
                 <button onclick="resetForm();" class="btn btn-warning"> Cancel</button>
             </span>
             <button id="btnAdd" onclick="addData();" class="btn btn-success"> ADD</button>
+            <button onclick="resetForm();" class="btn btn-warning"> Reset</button>
+            <button onclick="deleteList();" class="btn btn-warning"> Delete List</button>
         </div>
+
+        <div id="errors" style="display: none;"></div>
 
         <table id="listTable" class="table">
 
         </table>
     </div>
 
+    <nav class="navbar fixed-bottom navbar-light bg-light">
+        <div class="container">
+            <h4 class="text-center text-success">Total: <span id="totalValue">$ 0,00</span></h4>
+        </div>
+      </nav>
 
     <script src="js/config.js"></script>
     <script src="js/main.js"></script>

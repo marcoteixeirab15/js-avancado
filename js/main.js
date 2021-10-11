@@ -9,24 +9,32 @@ function getTotal(list){
     for (var key in list){
         total += list[key].value * list[key].amount;
     }
-    return total
+    document.getElementById("totalValue").innerHTML = formatValue(total)
+   
 }
 
 function setList(list){
     var table = '<thead><tr><td>Description</td><td>Amount</td><td>Value</td><td>Action</td></tr></thead><tbody>';
 
     for(var key in list){
-        table += '<tr><td>' + formatDesc(list[key].desc) + '</td><td>' + list[key].amount + '</td><td>' + formatValue(list[key].value) + '</td><td> <button class="btn btn-success" onclick="setUpdate(' + key + ');"> Edit </button>| Delete</td></tr>'
+        table += '<tr><td>' + formatDesc(list[key].desc) + '</td><td>' + formatAmount(list[key].amount) + '</td><td>' + formatValue(list[key].value) + '</td><td> <button class="btn btn-success" onclick="setUpdate(' + key + ');"> Edit </button> | <button class="btn btn-danger" onclick="deleteData(' + key + ');"> Delete </button>'
     }
 
     table += '</tbody>'
     document.getElementById("listTable").innerHTML = table;
+    getTotal(list);
+    saveListStorage(list);
 }
 
 function formatDesc(desc){
     var str = desc.toLowerCase();
     str = str.charAt(0).toUpperCase() + str.slice(1);
     return str;
+}
+
+
+function formatAmount(amount){
+    return parseInt(amount);
 }
 
 function formatValue(value){
@@ -37,6 +45,9 @@ function formatValue(value){
 }
 
 function addData(){
+    if(!validation()){
+        return;
+    }
     var desc = document.getElementById("desc").value;
     var amount = document.getElementById("amount").value;
     var value = document.getElementById("value").value;
@@ -44,6 +55,7 @@ function addData(){
     list.unshift({"desc": desc, "amount": amount, "value": value});
 
     setList(list);
+    resetForm();
 }
 
 function setUpdate(id){
@@ -54,6 +66,9 @@ function setUpdate(id){
     document.getElementById("value").value = obj.value;
     document.getElementById("btnUpdate").style.display = "inline-block";
     document.getElementById("btnAdd").style.display = "none";
+
+    document.getElementById("inputIDUpdate").innerHTML = '<input id="idUpdate" type="hidden" value="' + id + '">'; 
+    resetForm();
 }
 
 function resetForm(){
@@ -62,6 +77,103 @@ function resetForm(){
     document.getElementById("value").value = "";
     document.getElementById("btnUpdate").style.display = "none";
     document.getElementById("btnAdd").style.display = "inline-block";
+
+    document.getElementById("inputIDUpdate").innerHTML = "";
+    document.getElementById("errors").style.display = "none";
 }
 
-setList(list);
+function updateData(){
+    if(!validation()){
+        return;
+    }
+
+    var id = document.getElementById("idUpdate").value;
+    var desc = document.getElementById("desc").value;
+    var amount = document.getElementById("amount").value;
+    var value = document.getElementById("value").value;
+
+    list[id] = {"desc": desc, "amount": amount, "value": value};
+    
+    resetForm();
+    setList(list);
+}
+
+function deleteData(id){
+    if(confirm("Delete this item?")){
+        //Delete item from list
+        list.splice(id, 1);
+        
+        // if(id === list.length - 1){ //Verifica se o o registro é o ultimo item
+        //     list.pop(); //Deleta o ultimo registro da lista
+        // } else if (id === 0){ //Verifica se o registro é o primeiro item
+        //      list.shift(); //Deleta o primeiro registro da lista 
+        // } else {
+        //     //Deleta os outros registros da lista
+        //     //cria dois arrays excluindo o registro a ser deletado
+        //     //e concatena os dois
+        //     var arrAuxIni = list.slice(0, id); //pega do primeiro até o id
+        //     var ArrAuxEnd = list.slice(id + 1); // pega do id até o fim da lista
+
+        //     list = arrAuxIni.concat(ArrAuxEnd); //concatena os dois arrays
+        // }
+
+        setList(list);
+    }
+}
+
+
+function validation(){
+    var desc = document.getElementById("desc").value;
+    var amount = document.getElementById("amount").value;
+    var value = document.getElementById("value").value;
+    var errors = "";
+
+    document.getElementById("errors").style.display = "none";
+
+    if(desc === ""){
+        errors += '<p>Fill out description</p>';
+    }
+
+    if(amount === ""){
+        errors += '<p>Fill out quantity</p>';
+    } else if(amount != parseInt(amount) ){
+        errors += '<p>fill out a valid amount</p>';
+    }
+
+    if(value === ""){
+        errors += '<p>Fill out value</p>';
+    } else if(value != parseFloat(value) ){
+        errors += '<p>fill out a valid value</p>';
+    }
+
+    if(errors != ""){
+        document.getElementById("errors").style = "display: block; background-color: rgba(85, 85, 85, 0.3); color: white; padding: 10px; margin: 10px; border-radius: 13px";
+        document.getElementById("errors").innerHTML = "<h3>Error: </h3>" + errors ;
+        return 0;
+    }else{
+        return 1;
+    }
+
+}
+
+function deleteList(){
+    if(confirm("Delete this list?")){
+        list = [];
+        setList(list);
+    }
+}
+
+function saveListStorage(list){
+    var jsonStr = JSON.stringify(list);
+    localStorage.setItem("list", jsonStr);
+}
+
+function initListStorage(){
+    var testList = localStorage.getItem("list");
+    if(testList) {
+        list = JSON.parse(testList);
+    }
+    setList(list);
+}
+
+initListStorage();
